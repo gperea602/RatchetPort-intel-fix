@@ -91,14 +91,14 @@ jobs:
           $env:RATCHET_PATCH_TEST = (Resolve-Path out/ratchet-clean/verified-patches-test.exe).Path
           $env:RATCHET_PLAYGO_TEST = (Resolve-Path out/ratchet-clean/playgo-resolver-test.exe).Path
           python -m venv out/ratchet-tools
-          out/ratchet-tools/Scripts/python.exe -m pip install -r packaging/windows/requirements.txt
-          out/ratchet-tools/Scripts/python.exe -u tests/run_ci_tests.py
+          & .\out\ratchet-tools\Scripts\python.exe -m pip install -r packaging/windows/requirements.txt
+          & .\out\ratchet-tools\Scripts\python.exe -u tests/run_ci_tests.py
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          out/ratchet-tools/Scripts/python.exe tests/test_liverpool_commands.py
+          & .\out\ratchet-tools\Scripts\python.exe tests/test_liverpool_commands.py
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          out/ratchet-tools/Scripts/python.exe packaging/windows/package.py --build-dir out/ratchet-clean
+          & .\out\ratchet-tools\Scripts\python.exe packaging/windows/package.py --build-dir out/ratchet-clean
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          out/ratchet-tools/Scripts/python.exe packaging/windows/source_archive.py
+          & .\out\ratchet-tools\Scripts\python.exe packaging/windows/source_archive.py
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:
