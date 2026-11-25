@@ -87,7 +87,7 @@ jobs:
         timeout-minutes: 25
         shell: pwsh
         run: |
-          $env:PATH = $env:PATH + ";C:\msys64\clang64\bin"
+          $env:PATH = "C:\msys64\clang64\bin;" + $env:PATH
           $env:RATCHET_PATCH_TEST = (Resolve-Path out/ratchet-clean/verified-patches-test.exe).Path
           $env:RATCHET_PLAYGO_TEST = (Resolve-Path out/ratchet-clean/playgo-resolver-test.exe).Path
           python -m venv out/ratchet-tools
