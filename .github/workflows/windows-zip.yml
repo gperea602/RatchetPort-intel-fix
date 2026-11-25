@@ -132,3 +132,44 @@ jobs:
           $packages = @(Get-ChildItem dist/*-Windows.zip)
           if ($packages.Count -ne 1) { throw "Expected one Windows package" }
           powershell -NoProfile -ExecutionPolicy Bypass -File packaging/windows/smoke-test.ps1 $packages[0].FullName
+
+
+  publish-release:
+    # Publish only for the explicitly marked release commit, never for routine CI runs.
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[publish-ratchetport-release]')
+    needs: [build, smoke]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified Windows package
+        uses: actions/download-artifact@v4
+        with:
+          name: RatchetPort-Windows-${{ github.sha }}
+          path: dist
+      - name: Publish community Windows release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0-stellar
+          name: RatchetPort – Stellar Update (Windows community build)
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          draft: false
+          fail_on_unmatched_files: true
+          files: dist/*-Windows.zip
+          body: |
+            ## RatchetPort – Stellar Update (Windows community build)
+
+            This is an unofficial community build of the RatchetPort fork maintained at [gperea602/RatchetPort-intel-fix](https://github.com/gperea602/RatchetPort-intel-fix).
+
+            ### Included change
+            Includes upstream commit `42f529c6dfb9726df966f2a3e185332820d8036c` ("Windows: keep the guest red zone above RSP (fixes #25)"), intended to address the Windows guest stack/red-zone issue that can cause character deformation.
+
+            ### Validation
+            The Windows build, automated test suite, packaging step, and clean-environment ZIP smoke test must all pass before this release is published.
+
+            ### Important
+            - This is a pre-release/community build, not an official release from the original RatchetPort developers.
+            - Requires the user's own legally obtained game files; no game data is included.
+            - Back up existing installations and test in a separate folder.
+            - Compatibility and in-game behavior should be confirmed by users on their own systems.
