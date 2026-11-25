@@ -1,4 +1,5 @@
 # Windows pre-alpha build and package checks. Does not replace or publish releases.
+# PowerShell invokes the isolated Windows venv through an explicit relative path.
 name: Windows zip
 
 on:
