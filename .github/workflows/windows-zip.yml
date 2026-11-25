@@ -1,5 +1,5 @@
 # Windows pre-alpha build and package checks. Does not replace or publish releases.
-# PowerShell invokes the isolated Windows venv through an explicit relative path.
+# PowerShell creates and invokes the isolated venv with the python.org Windows interpreter.
 name: Windows zip
 
 on:
@@ -91,8 +91,11 @@ jobs:
           $env:PATH = "C:\msys64\clang64\bin;" + $env:PATH
           $env:RATCHET_PATCH_TEST = (Resolve-Path out/ratchet-clean/verified-patches-test.exe).Path
           $env:RATCHET_PLAYGO_TEST = (Resolve-Path out/ratchet-clean/playgo-resolver-test.exe).Path
-          python -m venv out/ratchet-tools
+          $pythonExe = Join-Path $env:pythonLocation 'python.exe'
+          & $pythonExe -m venv out/ratchet-tools
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           & .\out\ratchet-tools\Scripts\python.exe -m pip install -r packaging/windows/requirements.txt
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           & .\out\ratchet-tools\Scripts\python.exe -u tests/run_ci_tests.py
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           & .\out\ratchet-tools\Scripts\python.exe tests/test_liverpool_commands.py
