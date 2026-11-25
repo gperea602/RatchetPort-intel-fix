@@ -1,4 +1,4 @@
-# Windows pre-alpha build and package checks. Does not replace or publish releases.
+# Windows build, package checks, and gated community release publishing.
 # PowerShell creates and invokes the isolated venv with the python.org Windows interpreter.
 name: Windows zip
 
@@ -153,7 +153,8 @@ jobs:
           tag_name: v2.0-stellar
           name: RatchetPort – Stellar Update (Windows community build)
           target_commitish: ${{ github.sha }}
-          prerelease: true
+          prerelease: false
+          make_latest: true
           draft: false
           fail_on_unmatched_files: true
           files: dist/*-Windows.zip
@@ -169,7 +170,7 @@ jobs:
             The Windows build, automated test suite, packaging step, and clean-environment ZIP smoke test must all pass before this release is published.
 
             ### Important
-            - This is a pre-release/community build, not an official release from the original RatchetPort developers.
+            - This is an unofficial community build, not an official release from the original RatchetPort developers.
             - Requires the user's own legally obtained game files; no game data is included.
             - Back up existing installations and test in a separate folder.
             - Compatibility and in-game behavior should be confirmed by users on their own systems.
