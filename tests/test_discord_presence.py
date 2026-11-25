@@ -256,7 +256,16 @@ class GameProcessPresence(unittest.TestCase):
         }, clear=True))
         self.enterContext(mock.patch.object(run, 'PORT', folder))
         self.enterContext(mock.patch.object(run, 'find_executable', return_value=probe))
-        self.enterContext(mock.patch.object(run, 'run_script', return_value=str(game)))
+        def fake_run_script(name, *args, capture=False, check=True):
+            # The red-zone rewrite is optional: run_script(capture=True, check=False)
+            # returns (exit_code, stdout), unlike the path-returning mods.py call.
+            if capture and not check:
+                return 0, ''
+            if name == 'mods.py' and capture:
+                return str(game)
+            return None
+
+        self.enterContext(mock.patch.object(run, 'run_script', side_effect=fake_run_script))
         self.enterContext(mock.patch.object(patches, 'game_profile_for', return_value=None))
         self.enterContext(mock.patch.object(run.subprocess, 'run', return_value=mock.Mock(
             returncode=0, stdout='CPU: complete\n')))
